@@ -14,6 +14,7 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
@@ -30,8 +31,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentTitle(getNotificationContent(context));
 
         NotificationManagerCompat.from(context).notify(0, builder.build());
-
-        new MyHandler(context).sendEmptyMessageDelayed(0, 1000 * 60);
     }
 
     private SpannableString getNotificationContent(Context context) {
@@ -53,25 +52,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         spannableString.setSpan(styleSpan, 0, days.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 
         return spannableString;
-    }
-
-    private static class MyHandler extends Handler{
-
-        private Context context;
-
-        private MyHandler(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 0:
-                    Utils.setAlarm(context);
-                    break;
-            }
-        }
     }
 
 }
