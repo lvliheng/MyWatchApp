@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,9 @@ public class SplashActivity extends Activity {
 
 
     private static final int HANDLER_INTENT_MAIN = 0;
+    private static final int HANDLER_DELAY_MILLIS = 1000;
+    private static final int ANIMATOR_VALUE_FROM = 0;
+    private static final int ANIMATOR_DURATION = 2000;
 
     private TextView splashDaysTv;
 
@@ -36,8 +40,8 @@ public class SplashActivity extends Activity {
 
     private void startCountAnimation() {
         ValueAnimator animator = new ValueAnimator();
-        animator.setObjectValues(0, Utils.getDays());
-        animator.setDuration(2000);
+        animator.setObjectValues(ANIMATOR_VALUE_FROM, Utils.getDays());
+        animator.setDuration(ANIMATOR_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             public void onAnimationUpdate(ValueAnimator animation) {
                 splashDaysTv.setText(String.valueOf((int) animation.getAnimatedValue()));
@@ -52,7 +56,7 @@ public class SplashActivity extends Activity {
             @Override
             public void onAnimationEnd(Animator animation) {
                 MyHandler handler = new MyHandler(SplashActivity.this);
-                handler.sendEmptyMessageDelayed(HANDLER_INTENT_MAIN, 1000);
+                handler.sendEmptyMessageDelayed(HANDLER_INTENT_MAIN, HANDLER_DELAY_MILLIS);
             }
 
             @Override
@@ -87,7 +91,7 @@ public class SplashActivity extends Activity {
             switch (msg.what) {
                 case HANDLER_INTENT_MAIN:
                     activity.intentToMain();
-                    activity.setAlarm();
+                    Utils.setAlarm(activity);
                     break;
             }
         }
@@ -98,19 +102,4 @@ public class SplashActivity extends Activity {
         finish();
     }
 
-    private void setAlarm() {
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, getAlarmTime(), pendingIntent);
-    }
-
-    private long getAlarmTime() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 22);
-        calendar.set(Calendar.SECOND, 0);
-        return calendar.getTimeInMillis();
-    }
 }

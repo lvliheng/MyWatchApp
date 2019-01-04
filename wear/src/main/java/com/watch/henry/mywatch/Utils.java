@@ -1,5 +1,10 @@
 package com.watch.henry.mywatch;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,6 +15,9 @@ public class Utils {
 
 
     private static String START_DATE = "19/08/2016";
+    private static int ALARM_HOUR = 8;
+    private static int ALARM_MINUTE = 19;
+    private static int ALARM_SECOND = 0;
 
     public static int getDays() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -53,5 +61,23 @@ public class Utils {
         float dayCount = (float) diff / (24 * 60 * 60 * 1000);
 
         return (int) dayCount + 1;
+    }
+
+    public static void setAlarm(Context context) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, getAlarmTime(), pendingIntent);
+
+
+    }
+
+    private static long getAlarmTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, ALARM_HOUR);
+        calendar.set(Calendar.MINUTE, ALARM_MINUTE);
+        calendar.set(Calendar.SECOND, ALARM_SECOND);
+        return calendar.getTimeInMillis();
     }
 }
